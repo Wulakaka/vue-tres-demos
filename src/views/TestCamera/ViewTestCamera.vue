@@ -4,7 +4,7 @@ import TheExperience from './components/TheExperience.vue'
 </script>
 
 <template>
-  <TresCanvas window-size>
+  <TresCanvas window-size :tone-mapping-exposure="3">
     <TheExperience />
   </TresCanvas>
 </template>
