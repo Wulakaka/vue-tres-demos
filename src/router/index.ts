@@ -5,7 +5,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/test-camera',
+      redirect: '/particles',
     },
     {
       name: 'test-camera',
@@ -16,6 +16,11 @@ const router = createRouter({
       name: 'welcome',
       path: '/welcome',
       component: () => import('@/views/VueWelcome/ViewWelcome.vue'),
+    },
+    {
+      name: 'particles',
+      path: '/particles',
+      component: () => import('@/views/webgpu-particles/TheExperience.vue'),
     },
   ],
 })

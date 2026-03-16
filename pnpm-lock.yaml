@@ -12,11 +12,11 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18(vite@7.2.7(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2))
       '@tresjs/cientos':
-        specifier: ^5.2.0
-        version: 5.2.0(@tresjs/core@5.2.0(three@0.182.0)(vue@3.5.25(typescript@5.8.3)))(@types/three@0.182.0)(three@0.182.0)(vue@3.5.25(typescript@5.8.3))
+        specifier: ^5.6.0
+        version: 5.6.0(@tresjs/core@5.7.0(three@0.182.0)(vue@3.5.25(typescript@5.8.3)))(@types/three@0.182.0)(three@0.182.0)(vue@3.5.25(typescript@5.8.3))
       '@tresjs/core':
-        specifier: ^5.2.0
-        version: 5.2.0(three@0.182.0)(vue@3.5.25(typescript@5.8.3))
+        specifier: ^5.7.0
+        version: 5.7.0(three@0.182.0)(vue@3.5.25(typescript@5.8.3))
       '@vueuse/core':
         specifier: ^14.1.0
         version: 14.1.0(vue@3.5.25(typescript@5.8.3))
@@ -690,15 +690,15 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7
 
-  '@tresjs/cientos@5.2.0':
-    resolution: {integrity: sha512-xXjlIXIVwT9YimuVyYSu4Ku5mPBtAJ4p5Pl4JKXs3Gw0xCXKrISKnhrdvf5QZUGxhAG4k+hI0aNkaOE2zrELPQ==}
+  '@tresjs/cientos@5.6.0':
+    resolution: {integrity: sha512-/Q9wQMHi5WhpTYtYZtF6SGW+8OZBeHAJGieMdu7C9Y+lc0gaNeKrwsVSGiWMS0BQ0gjud7mYLadRNI/pmNz2fg==}
     peerDependencies:
-      '@tresjs/core': 5.2.0
+      '@tresjs/core': 5.7.0
       three: '>=0.133'
       vue: '>=3.5.17'
 
-  '@tresjs/core@5.2.0':
-    resolution: {integrity: sha512-Q9Wy+4CTDU8l/b9rr/wzN9d/oOI5MExnw59zCmlVrNExXfMkwSDzxdKhTcFG6C/2mWgxOog6WmYAQyAhMXDrxA==}
+  '@tresjs/core@5.7.0':
+    resolution: {integrity: sha512-omGQDyrG7m6ozbo+AWOAw1lO3UhQIKT6h/w/3Ci0TacQLzd2eFJOIsCPbicn4JI88fJG2EVT+IOQWsx9j+d+hQ==}
     peerDependencies:
       three: '>=0.133'
       vue: '>=3.4'
@@ -1800,6 +1800,11 @@ packages:
       react:
         optional: true
 
+  three-mesh-bvh@0.9.9:
+    resolution: {integrity: sha512-FJKitcjvbALmeQRK+Sc+nLGorCpkrZBrbgJZFzhdyWboak37DZikn46hvQkNqSbJPm227ahYmS6k3N/GXaAyXw==}
+    peerDependencies:
+      three: '>= 0.159.0'
+
   three-stdlib@2.36.1:
     resolution: {integrity: sha512-XyGQrFmNQ5O/IoKm556ftwKsBg11TIb301MB5dWNicziQBEs2g3gtOYIf7pFiLa0zI2gUwhtCjv9fmjnxKZ1Cg==}
     peerDependencies:
@@ -2504,15 +2509,16 @@ snapshots:
       tailwindcss: 4.1.18
       vite: 7.2.7(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)
 
-  '@tresjs/cientos@5.2.0(@tresjs/core@5.2.0(three@0.182.0)(vue@3.5.25(typescript@5.8.3)))(@types/three@0.182.0)(three@0.182.0)(vue@3.5.25(typescript@5.8.3))':
+  '@tresjs/cientos@5.6.0(@tresjs/core@5.7.0(three@0.182.0)(vue@3.5.25(typescript@5.8.3)))(@types/three@0.182.0)(three@0.182.0)(vue@3.5.25(typescript@5.8.3))':
     dependencies:
-      '@tresjs/core': 5.2.0(three@0.182.0)(vue@3.5.25(typescript@5.8.3))
+      '@tresjs/core': 5.7.0(three@0.182.0)(vue@3.5.25(typescript@5.8.3))
       '@vueuse/core': 13.9.0(vue@3.5.25(typescript@5.8.3))
       camera-controls: 2.10.1(three@0.182.0)
       stats-gl: 2.4.2(@types/three@0.182.0)(three@0.182.0)
       stats.js: 0.17.0
       three: 0.182.0
       three-custom-shader-material: 5.4.0(three@0.182.0)
+      three-mesh-bvh: 0.9.9(three@0.182.0)
       three-stdlib: 2.36.1(three@0.182.0)
       vue: 3.5.25(typescript@5.8.3)
     transitivePeerDependencies:
@@ -2520,7 +2526,7 @@ snapshots:
       - '@types/three'
       - react
 
-  '@tresjs/core@5.2.0(three@0.182.0)(vue@3.5.25(typescript@5.8.3))':
+  '@tresjs/core@5.7.0(three@0.182.0)(vue@3.5.25(typescript@5.8.3))':
     dependencies:
       '@pmndrs/pointer-events': 6.6.28
       '@vue/devtools-api': 7.7.9
@@ -3645,6 +3651,10 @@ snapshots:
       glsl-token-string: 1.0.1
       glsl-tokenizer: 2.1.5
       object-hash: 3.0.0
+      three: 0.182.0
+
+  three-mesh-bvh@0.9.9(three@0.182.0):
+    dependencies:
       three: 0.182.0
 
   three-stdlib@2.36.1(three@0.182.0):
