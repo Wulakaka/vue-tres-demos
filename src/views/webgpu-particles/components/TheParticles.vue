@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useTres } from '@tresjs/core'
-import { mix, smoothstep, uv, vec2, vec4, type int } from 'three/tsl'
+import { useLoop, useTres } from '@tresjs/core'
 import {
   cos,
   distance,
@@ -10,35 +9,62 @@ import {
   instancedArray,
   instanceIndex,
   min,
+  mix,
   mul,
   PI,
   PI2,
   sin,
+  smoothstep,
   sqrt,
+  uv,
+  vec2,
   vec3,
+  vec4,
 } from 'three/tsl'
 import { AdditiveBlending, SpriteNodeMaterial, WebGPURenderer } from 'three/webgpu'
-import { onMounted } from 'vue'
 
-const COUNT = 1024
+import type { int } from 'three/tsl'
+
+const COUNT = 30000
 
 const { renderer } = useTres()
 
+const { onRender } = useLoop()
+
 const { nodes } = (() => {
   const spawnPositionBuffer = instancedArray(COUNT, 'vec3')
+  const offsetPositionsBuffer = instancedArray(COUNT, 'vec3')
 
   const spawnPosition = spawnPositionBuffer.element(instanceIndex)
+  const offsetPosition = offsetPositionsBuffer.element(instanceIndex)
 
+  // 生成 0-1 随机数
   const hash = Fn(([index]: [number]) => {
     return fract(sin(float(index).mul(12.9898)).mul(43758.5453))
+  })
+
+  const thomasAttractor = Fn(([pos]: [ReturnType<typeof vec3>]) => {
+    const b = 0.19
+    const dt = 0.015
+
+    const x = pos.x
+    const y = pos.y
+    const z = pos.z
+
+    const dx = float(b).negate().mul(x).add(sin(y)).mul(dt)
+    const dy = float(b).negate().mul(y).add(sin(z)).mul(dt)
+    const dz = float(b).negate().mul(z).add(sin(x)).mul(dt)
+    return vec3(dx, dy, dz)
   })
 
   const computeInit = Fn(
     ({
       spawnPositions,
+      offsetPositions,
       index,
     }: {
       spawnPositions: ReturnType<typeof instancedArray>
+      offsetPositions: ReturnType<typeof instancedArray>
       index: ReturnType<typeof int>
     }) => {
       const h0 = hash(index)
@@ -54,16 +80,23 @@ const { nodes } = (() => {
       const z = mul(dist, cos(phi))
 
       spawnPositions.element(index).assign(vec3(x, y, z))
+      offsetPositions.element(index).assign(vec3(0))
     },
   )
 
   const computeNode = computeInit({
     spawnPositions: spawnPositionBuffer,
+    offsetPositions: offsetPositionsBuffer,
     index: instanceIndex,
   }).compute(COUNT)
 
+  const computeNodeUpdate = Fn(() => {
+    const updatedOffsetPosition = thomasAttractor(spawnPosition.add(offsetPosition))
+    offsetPosition.addAssign(updatedOffsetPosition)
+  })().compute(COUNT)
+
   const positionNode = Fn(() => {
-    const pos = spawnPosition
+    const pos = spawnPosition.add(offsetPosition)
     return pos
   })()
 
@@ -78,13 +111,15 @@ const { nodes } = (() => {
   const particleColor = Fn(
     ({
       spawnPos,
+      offsetPos,
       uvCoord,
     }: {
       spawnPos: ReturnType<typeof vec3>
+      offsetPos: ReturnType<typeof vec3>
       uvCoord: ReturnType<typeof vec2>
     }) => {
       const baseColor = vec3(0.24, 0.43, 0.96)
-      const distanceToCenter = min(distance(spawnPos, vec3(0)), 2.75)
+      const distanceToCenter = min(distance(spawnPos.add(offsetPos), vec3(0)), 2.75)
 
       const strength = distance(uvCoord, vec2(0.5))
 
@@ -100,13 +135,15 @@ const { nodes } = (() => {
 
   const colorNode = particleColor({
     spawnPos: spawnPosition,
+    offsetPos: offsetPosition,
     uvCoord: uv(),
   })
 
   return {
     nodes: {
-      computeNode,
       positionNode,
+      computeNode,
+      computeNodeUpdate,
       scaleNode,
       colorNode,
     },
@@ -122,9 +159,13 @@ const material = new SpriteNodeMaterial({
   blending: AdditiveBlending,
 })
 
-onMounted(() => {
-  ;(renderer as WebGPURenderer).compute(nodes.computeNode)
-})
+// 这里不需要放到 onMounted 中，因为我们使用的是 TresCanvas 的自定义渲染器，renderer 已经是 WebGPURenderer 实例了
+;(renderer as WebGPURenderer).compute(nodes.computeNode)
+
+// 这里的优先级表示在其他 onRender 之后执行
+onRender(() => {
+  ;(renderer as WebGPURenderer).compute(nodes.computeNodeUpdate)
+}, 1)
 </script>
 
 <template>
