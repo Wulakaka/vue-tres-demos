@@ -23,8 +23,6 @@ import {
 } from 'three/tsl'
 import { AdditiveBlending, SpriteNodeMaterial, WebGPURenderer } from 'three/webgpu'
 
-import type { int } from 'three/tsl'
-
 const COUNT = 30000
 
 const { renderer } = useTres()
@@ -57,38 +55,27 @@ const { nodes } = (() => {
     return vec3(dx, dy, dz)
   })
 
-  const computeInit = Fn(
-    ({
-      spawnPositions,
-      offsetPositions,
-      index,
-    }: {
-      spawnPositions: ReturnType<typeof instancedArray>
-      offsetPositions: ReturnType<typeof instancedArray>
-      index: ReturnType<typeof int>
-    }) => {
-      const h0 = hash(index)
-      const h1 = hash(index.add(1))
-      const h2 = hash(index.add(2))
+  const computeInit = Fn(() => {
+    const index = instanceIndex
+    const h0 = hash(index)
+    const h1 = hash(index.add(1))
+    const h2 = hash(index.add(2))
 
-      const dist = sqrt(h0.mul(4))
-      const theta = h1.mul(PI2)
-      const phi = h2.mul(PI)
+    const dist = sqrt(h0.mul(4))
+    const theta = h1.mul(PI2)
+    const phi = h2.mul(PI)
 
-      const x = mul(dist, sin(phi), cos(theta))
-      const y = mul(dist, sin(phi), sin(theta))
-      const z = mul(dist, cos(phi))
+    const x = mul(dist, sin(phi), cos(theta))
+    const y = mul(dist, sin(phi), sin(theta))
+    const z = mul(dist, cos(phi))
 
-      spawnPositions.element(index).assign(vec3(x, y, z))
-      offsetPositions.element(index).assign(vec3(0))
-    },
-  )
+    // 赋值初始位置
+    spawnPosition.assign(vec3(x, y, z))
+    // 赋值初始偏移位置，这里可以注释是因为默认为 0 向量
+    // offsetPosition.assign(vec3(0))
+  })
 
-  const computeNode = computeInit({
-    spawnPositions: spawnPositionBuffer,
-    offsetPositions: offsetPositionsBuffer,
-    index: instanceIndex,
-  }).compute(COUNT)
+  const computeNode = computeInit().compute(COUNT)
 
   const computeNodeUpdate = Fn(() => {
     const updatedOffsetPosition = thomasAttractor(spawnPosition.add(offsetPosition))
