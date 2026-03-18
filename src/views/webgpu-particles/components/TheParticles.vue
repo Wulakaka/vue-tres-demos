@@ -106,15 +106,20 @@ const { nodes } = (() => {
       uvCoord: ReturnType<typeof vec2>
     }) => {
       const baseColor = vec3(0.24, 0.43, 0.96)
+      // 距离世界中心
       const distanceToCenter = min(distance(spawnPos.add(offsetPos), vec3(0)), 2.75)
 
       const strength = distance(uvCoord, vec2(0.5))
 
+      // 越远离中心颜色越接近 baseColor
       const distColor = mix(vec3(0.97, 0.7, 0.45), baseColor, distanceToCenter.mul(0.4))
 
+      // 中心为 1，边缘为 0 的遮罩
       const fillMask = float(1).sub(strength.mul(2))
+      // 越靠近中心颜色越接近 distColor
       const finalColor = mix(vec3(0), distColor, fillMask)
 
+      // 超过 0.5 的为 0，小于 0.49 的为 1，形成一个圆形遮罩
       const circle = smoothstep(0.5, 0.49, strength)
       return vec4(finalColor.mul(circle), 1)
     },
